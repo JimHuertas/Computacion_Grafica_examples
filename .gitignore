@@ -2,3 +2,5 @@ app.dSYM/
 .app
 app
 ./app
+app.*
+*.app
