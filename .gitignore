@@ -1,6 +1,5 @@
 app.dSYM/
+.o
+.a
 .app
-app
-./app
-app.*
-*.app
+.so
