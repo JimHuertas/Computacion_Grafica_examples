@@ -10,6 +10,7 @@
 				"-fdiagnostics-color=always",
 				"-g",
 				"-I${workspaceFolder}/dependencies/include",
+				"-I /opt/homebrew/Cellar/glm",
 				"-L${workspaceFolder}/dependencies/library",
 				"${workspaceFolder}/main.cpp",
 				"${workspaceFolder}/glad.c",

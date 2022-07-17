@@ -3,7 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/dependencies/include"
+                "${workspaceFolder}/dependencies/include",
+                "/opt/homebrew/Cellar/**"
             ],
             "defines": [],
             "macFrameworkPath": [
