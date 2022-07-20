@@ -8,8 +8,8 @@
 #include <iostream>
 #include <vector>
 
-#include "headers/3_cubos/plano.h"
-#include "headers/3_cubos/cubo.h"
+#include "../headers/3_cubos/plano.h"
+#include "../headers/3_cubos/cubo.h"
 
 
 /*/////////////////////////////////////////////////

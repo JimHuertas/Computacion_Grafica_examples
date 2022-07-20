@@ -8,22 +8,25 @@
 #include <iostream>
 #include <vector>
 
-#include "headers/3_cubos/plano.h"
-#include "headers/3_cubos/cubo.h"
+#include "../headers/parcial_2/piramide.h"
+#include "../headers/parcial_2/plano.h"
 
-
-/*/////////////////////////////////////////////////
-// CONTROLES //
-
-    A => GIRAR A LA IZQUIERDA
-    D => GIRAR A LA DERECHA
-
-/////////////////////////////////////////////////*/
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
+
+/*/////////////////////////////////////////////////
+// CONTROLES //
+
+    A => DESPLAZARSE A LA IZQUIERDA
+    D => DESPLAZARSE A LA DERECHA
+    D => DESPLAZARSE HACIA ADELANTE
+    S => DESPLAZARSE HACIA ATRAS
+    MOUSE => GIRAR LA CAMARA
+
+/////////////////////////////////////////////////*/
 
 ///////////////////////////////////////////////////
 // CONFIGURACION DE VALORES //
@@ -31,10 +34,8 @@ void processInput(GLFWwindow* window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
 
-///////////////////////////////////////////////////
-
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.5f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -87,24 +88,20 @@ int main()
         return -1;
     }
 
-    
+
     // Colores
     glm::vec4 g = glm::vec4(0.45f, 0.83f, 0.24f, 1.0f);
-    glm::vec4 w = glm::vec4(0.09f, 0.52f, 0.87f, 1.0f);
-    glm::vec4 r = glm::vec4(1.0f, 0.32f, 0.22f, 1.0f);
-    glm::vec4 y = glm::vec4(0.98f, 0.13f, 0.12f, 1.0f);
-    glm::vec4 b = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-    glm::vec4 o = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec4 w = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec4 r = glm::vec4(0.98f, 0.13f, 0.12f, 1.0f);
+    glm::vec4 y = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    glm::vec4 b = glm::vec4(0.09f, 0.52f, 0.87f, 1.0f);
+    glm::vec4 o = glm::vec4(1.0f, 0.32f, 0.22f, 1.0f);
     glm::vec4 bk = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
 
     //Cubos
-    Cubo columna_cubos[3] = {
-    Cubo(std::vector<glm::vec4>{r, b, g, w, y, bk}, glm::vec3(0.0f,  1.1f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model),
-    Cubo(std::vector<glm::vec4>{b, g, w, y, bk, r}, glm::vec3(0.0f,  0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model),
-    Cubo(std::vector<glm::vec4>{g, w, bk, r, b, g}, glm::vec3(0.0f, -1.1f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model) };
-
+    Piramide cubitoo(std::vector<glm::vec4>{r, b, g, w, y, bk}, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), model);
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window))
@@ -123,17 +120,11 @@ int main()
 
         // camera/view transformation
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        
-        // cubo transformation
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            for (int i = 0; i < 3; i++)
-                columna_cubos[i].set_rotation(0.1, glm::vec3(0.0f, 0.0f, 1.0f));
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            for (int i = 0; i < 3; i++)
-                columna_cubos[i].set_rotation(-0.1, glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
         // cubo
-        for (int i = 0; i < 3; i++)
-            columna_cubos[i].render(view);
+        cubitoo.render(view, projection);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -153,6 +144,16 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -164,7 +165,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-// glfw: whenever the mouse moves, <35P10 /> this callback is called
+// glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
