@@ -17,7 +17,7 @@ public:
     void setColor(glm::vec4 new_color) {
         color = new_color;
     }
-    void render(glm::mat4 transform, glm::mat4 model, glm::mat4 view) {
+    void render(glm::mat4 transform, glm::mat4 model, glm::mat4 view, glm::mat4 projection) {
         glUseProgram(shaderProgram);
 
         unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
@@ -28,6 +28,9 @@ public:
 
         unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        unsigned int projLoc = glGetUniformLocation(shaderProgram, "projection");
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUniform4f(vertexColorLocation, color[0], color[1], color[2], color[3]);
@@ -81,9 +84,10 @@ private:
             "uniform mat4 transform; \n"
             "uniform mat4 model; \n"
             "uniform mat4 view; \n"
+            "uniform mat4 projection; \n"
             "void main()\n"
             "{\n"
-            "    gl_Position = view * model * transform * vec4(aPos, 1.0);\n"
+            "    gl_Position = projection * view * model * transform * vec4(aPos, 1.0);\n"
             "}\n";
         const char* fragmentShaderSource = "#version 330 core\n"
             "out vec4 FragColor;\n"

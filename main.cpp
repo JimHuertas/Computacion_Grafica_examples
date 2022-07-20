@@ -34,7 +34,7 @@ const unsigned int SCR_HEIGHT = 800;
 ///////////////////////////////////////////////////
 
 // camera
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 0.5f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 1.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -49,6 +49,41 @@ float fov = 45.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
+class Columna {
+private:
+    glm::mat4 model = glm::mat4(1.0f);
+    // Colores
+    glm::vec4 g = glm::vec4(0.0f, 0.607f, 0.282f, 1.0f);
+    glm::vec4 w = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    glm::vec4 r = glm::vec4(0.717f, 0.070f, 0.203f, 1.0f);
+    glm::vec4 y = glm::vec4(1.0f, 0.835f, 0.0f, 1.0f);
+    glm::vec4 b = glm::vec4(0.0f, 0.274f, 0.678f, 1.0f);
+    glm::vec4 o = glm::vec4(1.0f, 0.345f, 0.0f, 1.0f);
+    glm::vec4 bk = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    Cubo columna_cubos[3] = {
+    Cubo(std::vector<glm::vec4>{r, b, g, w, y, bk}, glm::vec3(0.0f,  1.1f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model),
+    Cubo(std::vector<glm::vec4>{b, g, w, y, bk, r}, glm::vec3(0.0f,  0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model),
+    Cubo(std::vector<glm::vec4>{g, w, bk, r, b, g}, glm::vec3(0.0f, -1.1f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model) };
+public:
+    Columna() {
+        ;
+    }
+    void render(GLFWwindow* window, glm::mat4 view, glm::mat4 projection) {
+        // cubo transformation
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            for (int i = 0; i < 3; i++)
+                columna_cubos[i].set_rotation(0.8, glm::vec3(0.0f, 0.0f, 1.0f));
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            for (int i = 0; i < 3; i++)
+                columna_cubos[i].set_rotation(-0.8, glm::vec3(0.0f, 0.0f, 1.0f));
+        // cubo
+
+        for (int i = 0; i < 3; i++)
+            columna_cubos[i].render(view, projection);
+    }
+
+};
 
 int main()
 {
@@ -87,23 +122,7 @@ int main()
         return -1;
     }
 
-    
-    // Colores
-    glm::vec4 g = glm::vec4(0.45f, 0.83f, 0.24f, 1.0f);
-    glm::vec4 w = glm::vec4(0.09f, 0.52f, 0.87f, 1.0f);
-    glm::vec4 r = glm::vec4(1.0f, 0.32f, 0.22f, 1.0f);
-    glm::vec4 y = glm::vec4(0.98f, 0.13f, 0.12f, 1.0f);
-    glm::vec4 b = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-    glm::vec4 o = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    glm::vec4 bk = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
-
-    glm::mat4 model = glm::mat4(1.0f);
-
-    //Cubos
-    Cubo columna_cubos[3] = {
-    Cubo(std::vector<glm::vec4>{r, b, g, w, y, bk}, glm::vec3(0.0f,  1.1f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model),
-    Cubo(std::vector<glm::vec4>{b, g, w, y, bk, r}, glm::vec3(0.0f,  0.0f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model),
-    Cubo(std::vector<glm::vec4>{g, w, bk, r, b, g}, glm::vec3(0.0f, -1.1f, 0.0f), glm::vec3(0.2f, 0.2f, 0.2f), model) };
+    Columna HHH;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -123,17 +142,11 @@ int main()
 
         // camera/view transformation
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        
-        // cubo transformation
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            for (int i = 0; i < 3; i++)
-                columna_cubos[i].set_rotation(0.1, glm::vec3(0.0f, 0.0f, 1.0f));
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            for (int i = 0; i < 3; i++)
-                columna_cubos[i].set_rotation(-0.1, glm::vec3(0.0f, 0.0f, 1.0f));
-        // cubo
-        for (int i = 0; i < 3; i++)
-            columna_cubos[i].render(view);
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+        HHH.render(window, view, projection);
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

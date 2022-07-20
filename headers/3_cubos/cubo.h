@@ -23,7 +23,7 @@ public:
         }
 
         model = model_;
-;
+        ;
         transform = glm::scale(transform, escalar);
         transform = glm::translate(transform, translacion);
 
@@ -82,9 +82,9 @@ public:
         return transform;
     }
 
-    void render(glm::mat4 view) {
+    void render(glm::mat4 view, glm::mat4 projection) {
         for (int i = 0; i < 6; i++)
-            lados[i].render(transform,model,view);
+            lados[i].render(transform, model, view, projection);
     }
 
     void set_rotation(float rot_grades, glm::vec3 rot_vect) {
